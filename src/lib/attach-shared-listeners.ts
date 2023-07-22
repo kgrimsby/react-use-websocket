@@ -1,15 +1,18 @@
-import { sharedWebSockets } from './globals';
-import { DEFAULT_RECONNECT_LIMIT, DEFAULT_RECONNECT_INTERVAL_MS, ReadyState, isEventSourceSupported } from './constants';
-import { getSubscribers } from './manage-subscribers';
 import { MutableRefObject } from 'react';
-import { Options, SendMessage, WebSocketLike } from './types';
+import { DEFAULT_RECONNECT_INTERVAL_MS, DEFAULT_RECONNECT_LIMIT, ReadyState, isEventSourceSupported } from './constants';
+import { sharedWebSockets } from './globals';
+import { getSubscribers } from './manage-subscribers';
 import { setUpSocketIOPing } from './socket-io';
+import { Options, SendMessage, WebSocketLike } from './types';
 
 const bindMessageHandler = (
   webSocketInstance: WebSocketLike,
   url: string,
+  filter?: (event: WebSocketEventMap['message']) => WebSocketEventMap['message']
 ) => {
-  webSocketInstance.onmessage = (message: WebSocketEventMap['message']) => {
+  webSocketInstance.onmessage = (m: WebSocketEventMap['message']) => {
+    const message = filter ? filter(m) : m
+    
     getSubscribers(url).forEach(subscriber => {
       if (subscriber.optionsRef.current.onMessage) {
         subscriber.optionsRef.current.onMessage(message);
@@ -122,7 +125,7 @@ export const attachSharedListeners = (
     interval = setUpSocketIOPing(sendMessage);
   }
 
-  bindMessageHandler(webSocketInstance, url);
+  bindMessageHandler(webSocketInstance, url, optionsRef.current.messageFilter);
   bindCloseHandler(webSocketInstance, url);
   bindOpenHandler(webSocketInstance, url);
   bindErrorHandler(webSocketInstance, url);
