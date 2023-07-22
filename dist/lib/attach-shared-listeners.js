@@ -16,9 +16,9 @@ var constants_1 = require("./constants");
 var globals_1 = require("./globals");
 var manage_subscribers_1 = require("./manage-subscribers");
 var socket_io_1 = require("./socket-io");
-var bindMessageHandler = function (webSocketInstance, url, filter) {
+var bindMessageHandler = function (webSocketInstance, url, transformer) {
     webSocketInstance.onmessage = function (m) {
-        var message = filter ? filter(m) : m;
+        var message = transformer ? transformer(m) : m;
         (0, manage_subscribers_1.getSubscribers)(url).forEach(function (subscriber) {
             if (subscriber.optionsRef.current.onMessage) {
                 subscriber.optionsRef.current.onMessage(message);
@@ -96,7 +96,7 @@ var attachSharedListeners = function (webSocketInstance, url, optionsRef, sendMe
     if (optionsRef.current.fromSocketIO) {
         interval = (0, socket_io_1.setUpSocketIOPing)(sendMessage);
     }
-    bindMessageHandler(webSocketInstance, url, optionsRef.current.messageFilter);
+    bindMessageHandler(webSocketInstance, url, optionsRef.current.messageTransformer);
     bindCloseHandler(webSocketInstance, url);
     bindOpenHandler(webSocketInstance, url);
     bindErrorHandler(webSocketInstance, url);

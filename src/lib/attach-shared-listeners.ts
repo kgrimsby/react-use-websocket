@@ -8,10 +8,10 @@ import { Options, SendMessage, WebSocketLike } from './types';
 const bindMessageHandler = (
   webSocketInstance: WebSocketLike,
   url: string,
-  filter?: (event: WebSocketEventMap['message']) => WebSocketEventMap['message']
+  transformer?: (event: WebSocketEventMap['message']) => WebSocketEventMap['message']
 ) => {
   webSocketInstance.onmessage = (m: WebSocketEventMap['message']) => {
-    const message = filter ? filter(m) : m
+    const message = transformer ? transformer(m) : m
     
     getSubscribers(url).forEach(subscriber => {
       if (subscriber.optionsRef.current.onMessage) {
@@ -125,7 +125,7 @@ export const attachSharedListeners = (
     interval = setUpSocketIOPing(sendMessage);
   }
 
-  bindMessageHandler(webSocketInstance, url, optionsRef.current.messageFilter);
+  bindMessageHandler(webSocketInstance, url, optionsRef.current.messageTransformer);
   bindCloseHandler(webSocketInstance, url);
   bindOpenHandler(webSocketInstance, url);
   bindErrorHandler(webSocketInstance, url);

@@ -17,7 +17,7 @@ var socket_io_1 = require("./socket-io");
 var util_1 = require("./util");
 var bindMessageHandler = function (webSocketInstance, optionsRef, setLastMessage) {
     webSocketInstance.onmessage = function (message) {
-        optionsRef.current.messageFilter && optionsRef.current.messageFilter(message);
+        optionsRef.current.messageTransformer && optionsRef.current.messageTransformer(message);
         optionsRef.current.onMessage && optionsRef.current.onMessage(message);
         if (typeof optionsRef.current.filter === 'function' && optionsRef.current.filter(message) !== true) {
             return;
