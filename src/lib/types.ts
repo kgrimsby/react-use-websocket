@@ -10,6 +10,7 @@ export interface Options {
   queryParams?: QueryParams;
   protocols?: string | string[];
   share?: boolean;
+  messageFilter?: (event: WebSocketEventMap['message']) => void;
   onOpen?: (event: WebSocketEventMap['open']) => void;
   onClose?: (event: WebSocketEventMap['close']) => void;
   onMessage?: (event: WebSocketEventMap['message']) => void;

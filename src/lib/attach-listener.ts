@@ -1,11 +1,11 @@
 import { MutableRefObject } from 'react';
-import { setUpSocketIOPing } from './socket-io';
 import {
-  DEFAULT_RECONNECT_LIMIT,
   DEFAULT_RECONNECT_INTERVAL_MS,
+  DEFAULT_RECONNECT_LIMIT,
   ReadyState,
   isEventSourceSupported,
 } from './constants';
+import { setUpSocketIOPing } from './socket-io';
 import { Options, SendMessage, WebSocketLike } from './types';
 import { assertIsWebSocket } from './util';
 
@@ -20,6 +20,7 @@ const bindMessageHandler = (
   setLastMessage: Setters['setLastMessage'],
 ) => {
   webSocketInstance.onmessage = (message: WebSocketEventMap['message']) => {
+    optionsRef.current.messageFilter && optionsRef.current.messageFilter(message);
     optionsRef.current.onMessage && optionsRef.current.onMessage(message);
     if (typeof optionsRef.current.filter === 'function' && optionsRef.current.filter(message) !== true) {
       return;
