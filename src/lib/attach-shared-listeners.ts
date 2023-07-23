@@ -8,10 +8,10 @@ import { Options, SendMessage, WebSocketLike } from './types';
 const bindMessageHandler = (
   webSocketInstance: WebSocketLike,
   url: string,
-  transformer?: (event: WebSocketEventMap['message']) => WebSocketEventMap['message']
+  transformer?: (event: WebSocketEventMap['message']) => Promise<WebSocketEventMap['message']>
 ) => {
-  webSocketInstance.onmessage = (m: WebSocketEventMap['message']) => {
-    const message = transformer ? transformer(m) : m
+  webSocketInstance.onmessage = async (m: WebSocketEventMap['message']) => {
+    const message = transformer ? await transformer(m) : m
     
     getSubscribers(url).forEach(subscriber => {
       if (subscriber.optionsRef.current.onMessage) {

@@ -19,8 +19,8 @@ const bindMessageHandler = (
   optionsRef: MutableRefObject<Options>,
   setLastMessage: Setters['setLastMessage'],
 ) => {
-  webSocketInstance.onmessage = (message: WebSocketEventMap['message']) => {
-    optionsRef.current.messageTransformer && optionsRef.current.messageTransformer(message);
+  webSocketInstance.onmessage = async (message: WebSocketEventMap['message']) => {
+    optionsRef.current.messageTransformer && await optionsRef.current.messageTransformer(message);
     optionsRef.current.onMessage && optionsRef.current.onMessage(message);
     if (typeof optionsRef.current.filter === 'function' && optionsRef.current.filter(message) !== true) {
       return;
